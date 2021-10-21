@@ -93,13 +93,25 @@ def main():
     time_c = time.time()
     print(f"run took: {time_c - time_a}")
 
-if __name__ == '__main__':
+def use_uconn_sample_data():
     if len(sys.argv) == 1:
         sys.argv = [sys.argv[0], "cn", "weka",
                     "--xlsx_file", "uconn-ib/uconn.xlsx",
                     "--switch_info_file", "uconn-ib/uconn-ib-switches.txt", 
                     "--route_info_file", "uconn-ib/uconn-ib-routes.txt",
                     "--link_info_file", "uconn-ib/uconn-ib-links.txt"
-        ]
-    main()
+                    ]
 
+def use_peng_sample_data():
+    if len(sys.argv) == 1:
+        sys.argv = [sys.argv[0], "cn", "weka",
+                    "--xlsx_file", "peng/peng.xlsx",
+                    "--switch_info_file", "peng/ibswitches-peng.txt", 
+                    "--route_info_file", "peng/ibroutes-peng.txt",
+                    "--link_info_file", "peng/iblinkinfo-peng.txt"
+                    ]
+
+if __name__ == '__main__':
+    use_uconn_sample_data()
+    # use_peng_sample_data()
+    main()

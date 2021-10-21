@@ -272,19 +272,32 @@ def main():
     print(f"Graph creation time: {time_c - time_b} seconds.")
     # print(f"Graph created and saved in {args.graph_file}.")
 
-
-if __name__ == '__main__':
+def use_uconn_sample_data():
     if len(sys.argv) == 1:
         sys.argv = [sys.argv[0], "cn", "weka",
                     "--graph_subset_file", "uconn-ib/uconn-subset",
                     "--graph_all_file", "uconn-ib/uconn-full", 
                     "--graph_subset", 
-                    f"cn378,cn394,cn383,cn382,cn370,cn386,cn391,cn365,cn379,cn384,cn387,cn385,cn337,"
-                    f"cn395,cn406,cn368,cn407,cn332,cn341,cn348,cn380,cn364,cn338,cn403,"
+                    f"cn332,cn337,cn338,cn341,cn348,cn364,cn365,cn368,cn370,cn378,cn382,cn383,"
+                    f"cn379,cn380,cn384,cn385,cn386,cn387,cn391,cn394,cn395,cn403,cn406,cn407,"
                     f"weka01,weka02,weka03,weka04,weka05,weka06,weka07,weka08,weka09,weka10,weka11,weka12",
                     "--xlsx_file", "uconn-ib/uconn.xlsx",
                     "--switch_info_file", "uconn-ib/uconn-ib-switches.txt", 
                     "--route_info_file", "uconn-ib/uconn-ib-routes.txt",
                     "--link_info_file", "uconn-ib/uconn-ib-links.txt"
                     ]
+                    
+def use_peng_sample_data():
+    if len(sys.argv) == 1:
+        sys.argv = [sys.argv[0], "cn", "weka",
+                    "--graph_all_file", "peng/peng-full", 
+                    "--xlsx_file", "peng/peng.xlsx",
+                    "--switch_info_file", "peng/ibswitches-peng.txt", 
+                    "--route_info_file", "peng/ibroutes-peng.txt",
+                    "--link_info_file", "peng/iblinkinfo-peng.txt"
+                    ]
+
+if __name__ == '__main__':
+    use_uconn_sample_data()
+    # use_peng_sample_data()
     main()
