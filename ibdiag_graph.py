@@ -239,18 +239,19 @@ def do_switch_graph(switches, filename="graph", host_list=None):
     plt.savefig(filename + ".pdf", bbox_inches='tight', pad_inches=0.5)
     plt.show()
 
-def get_args():
-    my_parser = argparse.ArgumentParser(description="ibdiag_graph", add_help=False)
+def get_arg_parser(description="ibdiag_graph: Generate IB network map(s) and excel data file"):
+    my_parser = ibdiag_xlsx.get_arg_parser(description=description)
     my_parser.add_argument("--graph_subset", dest="graph_subset", default=None,
                            help="comma separated list of names to be included in the graph")
     my_parser.add_argument("--graph_subset_file", dest="graph_subset_file", default="graph.png", 
         help="filename for graph subset output when --graph_subset is supplied")
     my_parser.add_argument("--graph_all_file", dest="graph_all_file", default="graph-full.png", 
         help="filename for full graph output; this file is always produced")
-    xlsx_args = ibdiag_xlsx.get_args()
-    (a, leftover) = my_parser.parse_known_args(namespace=xlsx_args)
-    if len(leftover) > 0:
-        print(f"Extra args: {leftover}")
+    return my_parser
+
+def get_args():
+    my_parser = get_arg_parser()
+    a = my_parser.parse_args()
     return a
 
 def main():
@@ -274,7 +275,7 @@ def main():
 
 def use_uconn_sample_data():
     if len(sys.argv) == 1:
-        sys.argv = [sys.argv[0], "cn", "weka",
+        sys.argv = [sys.argv[0], # "cn", "weka",
                     "--graph_subset_file", "uconn-ib/uconn-subset",
                     "--graph_all_file", "uconn-ib/uconn-full", 
                     "--graph_subset", 
@@ -286,10 +287,10 @@ def use_uconn_sample_data():
                     "--route_info_file", "uconn-ib/uconn-ib-routes.txt",
                     "--link_info_file", "uconn-ib/uconn-ib-links.txt"
                     ]
-                    
+
 def use_peng_sample_data():
     if len(sys.argv) == 1:
-        sys.argv = [sys.argv[0], "cn", "weka",
+        sys.argv = [sys.argv[0], # "cn", "weka",
                     "--graph_all_file", "peng/peng-full", 
                     "--xlsx_file", "peng/peng.xlsx",
                     "--switch_info_file", "peng/ibswitches-peng.txt", 
@@ -298,6 +299,6 @@ def use_peng_sample_data():
                     ]
 
 if __name__ == '__main__':
-    use_uconn_sample_data()
-    # use_peng_sample_data()
+    # use_uconn_sample_data()
+    use_peng_sample_data()
     main()

@@ -72,17 +72,15 @@ def write_xlsx(switches, outfile):
                 wb.sheets['downports'].write_next_row([switchpp, s.lid, portnum])
     wb.close()
 
-def get_args(allow_unknown_args=False):
-    if allow_unknown_args:
-        my_parser = argparse.ArgumentParser(add_help=False)
-    else:
-        my_parser = argparse.ArgumentParser(description="ibdiag_xlsx")
+def get_arg_parser(description="ibdiag_xlsx: Generate IB excel data file"):
+    my_parser = ibdiag.get_arg_parser(description=description)
     my_parser.add_argument("--xlsx_file", dest="xlsx_file", default="ibdiag.xlsx",
                            help="file name for .xlsx output file")
-    ibdiag_args = ibdiag.get_args(allow_unknown_args=True)
-    (a, leftover) = my_parser.parse_known_args(namespace=ibdiag_args)
-    if len(leftover) > 0:
-        print(f"Extra args: {leftover}")
+    return my_parser
+
+def get_args(allow_unknown_args=False):
+    my_parser = get_arg_parser()
+    a = my_parser.parse_args()
     return a
 
 def main():
@@ -95,7 +93,7 @@ def main():
 
 def use_uconn_sample_data():
     if len(sys.argv) == 1:
-        sys.argv = [sys.argv[0], "cn", "weka",
+        sys.argv = [sys.argv[0], # "cn", "weka",
                     "--xlsx_file", "uconn-ib/uconn.xlsx",
                     "--switch_info_file", "uconn-ib/uconn-ib-switches.txt", 
                     "--route_info_file", "uconn-ib/uconn-ib-routes.txt",
@@ -104,7 +102,7 @@ def use_uconn_sample_data():
 
 def use_peng_sample_data():
     if len(sys.argv) == 1:
-        sys.argv = [sys.argv[0], "cn", "weka",
+        sys.argv = [sys.argv[0], # "cn", "weka",
                     "--xlsx_file", "peng/peng.xlsx",
                     "--switch_info_file", "peng/ibswitches-peng.txt", 
                     "--route_info_file", "peng/ibroutes-peng.txt",

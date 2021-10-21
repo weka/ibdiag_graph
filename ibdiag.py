@@ -6,24 +6,19 @@ import argparse
 import sys
 import os
 
-def get_args(allow_unknown_args=False):
-    if allow_unknown_args:
-        argparser = argparse.ArgumentParser(add_help=False)
-    else:
-        argparser = argparse.ArgumentParser(description="ibdiag")
-    argparser.add_argument('starthost', nargs='?', default=None, help="first host for extra path checks")
-    argparser.add_argument('otherhosts', nargs='*', default=None)
+def get_arg_parser(description="ibdiag: Generate IB connection data"):
+    argparser = argparse.ArgumentParser(description=description, add_help=True)
     argparser.add_argument("--switch_info_file", dest="switch_info_file", default = None, 
         help="file containing the results of the 'ibswitches' command")
     argparser.add_argument("--link_info_file", dest="link_info_file", default = None, 
         help="file containing the results of the 'iblinkinfo --switches-only -l' command")
     argparser.add_argument("--route_info_file", dest="route_info_file", default = None, 
         help="file containing the concatenated results of the 'ibroute <switch lid>' command, for all switches'")
+    return argparser
 
-    if allow_unknown_args:
-        a, _ = argparser.parse_known_args()
-    else:
-        a = argparser.parse_args()
+def get_args():
+    argparser = get_arg_parser()
+    a = argparser.parse_args()
     return a
 
 def run_cmd(cmd_args_list):
@@ -413,20 +408,20 @@ def do_diag_run(parsed_args):
     print(f"{len(host_lids)} port-consolidated hosts found (assumes hostname<space><portname> format for endport):")
     for hname, lids in host_lids.items():
         print(f"    {hname} {' '.ljust(32 - len(hname))} lids: {lids}")
-    print(f"\n--- Route contention: (computing between: {parsed_args.starthost} and {parsed_args.otherhosts})")
-    host1_exp = expand_hostnames(parsed_args.starthost, host_names_list=host_names_only)
-    host1_lids = get_all_host_lids(host_lids, host1_exp)
-    host2_exp = expand_hostnames(parsed_args.otherhosts, host_names_list=host_names_only)
-    host2_lids = get_all_host_lids(host_lids, host2_exp)
-    print_route_tracing_message(host1_lids, host1_exp, host2_lids, host2_exp, parsed_args)
-    all_subroutes = compute_subroutes(host1_lids, host2_lids, all_endports, all_switches)
-    print(f"\n    Finding and printing shared ISLs for routes...\n")
-    print_shared_subroutes(all_switches, all_subroutes, all_endports)
-    print(f"\n    Computing routing usage between (expanded hosts) {host1_exp} and {host2_exp}")
-    print(f"\n        lids: {host2_lids} and {host1_lids}")
-    all_subroutes = compute_subroutes(host2_lids, host1_lids, all_endports, all_switches)
-    print(f"\n    Finding and printing shared ISLs for routes...\n")
-    print_shared_subroutes(all_switches, all_subroutes, all_endports)
+    # print(f"\n--- Route contention: (computing between: {parsed_args.starthost} and {parsed_args.otherhosts})")
+    # host1_exp = expand_hostnames(parsed_args.starthost, host_names_list=host_names_only)
+    # host1_lids = get_all_host_lids(host_lids, host1_exp)
+    # host2_exp = expand_hostnames(parsed_args.otherhosts, host_names_list=host_names_only)
+    # host2_lids = get_all_host_lids(host_lids, host2_exp)
+    # print_route_tracing_message(host1_lids, host1_exp, host2_lids, host2_exp, parsed_args)
+    # all_subroutes = compute_subroutes(host1_lids, host2_lids, all_endports, all_switches)
+    # print(f"\n    Finding and printing shared ISLs for routes...\n")
+    # print_shared_subroutes(all_switches, all_subroutes, all_endports)
+    # print(f"\n    Computing routing usage between (expanded hosts) {host1_exp} and {host2_exp}")
+    # print(f"\n        lids: {host2_lids} and {host1_lids}")
+    # all_subroutes = compute_subroutes(host2_lids, host1_lids, all_endports, all_switches)
+    # print(f"\n    Finding and printing shared ISLs for routes...\n")
+    # print_shared_subroutes(all_switches, all_subroutes, all_endports)
     print("Done.")
     return all_switches
 
@@ -439,7 +434,7 @@ def main():
 
 def use_uconn_sample_data():
     if len(sys.argv) == 1:
-        sys.argv = [sys.argv[0], "cn", "weka",
+        sys.argv = [sys.argv[0], # "cn", "weka",
                     "--switch_info_file", "uconn-ib/uconn-ib-switches.txt", 
                     "--route_info_file", "uconn-ib/uconn-ib-routes.txt",
                     "--link_info_file", "uconn-ib/uconn-ib-links.txt"
@@ -447,7 +442,7 @@ def use_uconn_sample_data():
 
 def use_peng_sample_data():
     if len(sys.argv) == 1:
-        sys.argv = [sys.argv[0], "cn", "weka",
+        sys.argv = [sys.argv[0], # "cn", "weka",
                     "--switch_info_file", "peng/ibswitches-peng.txt", 
                     "--route_info_file", "peng/ibroutes-peng.txt",
                     "--link_info_file", "peng/iblinkinfo-peng.txt"
@@ -457,5 +452,4 @@ if __name__ == '__main__':
     use_uconn_sample_data()
     # use_peng_sample_data()
     main()
-
 
