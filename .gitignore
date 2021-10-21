@@ -127,3 +127,28 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+peng/iblinkinfo-peng-ca-only-grep-LinkUp.txt
+peng/iblinkinfo-peng-switches-only-grep-LinkUp.txt
+peng/ibroute1-peng.txt
+peng/ibroute38-peng.txt
+peng/ibroute53-peng.txt
+peng/ibroute58-peng.txt
+peng/ibroute61-peng.txt
+peng/ibroute75-peng.txt
+peng/ibroute95-peng.txt
+peng/ibroute99-peng.txt
+peng/ibroutes-peng.txt
+peng/ibswitches-peng.txt
+peng/show_ib_paths_from_dgx.txt
+peng/show_ib_paths_to_dgx.txt
+peng/tmp-routes-out.txt
+peng/tmp-switch-lids.txt
+uconn-ib/.DS_Store
+uconn-ib/postinstall-output-diag.txt
+uconn-ib/uconn-ib-links.txt
+uconn-ib/uconn-ib-routes.txt
+uconn-ib/uconn-ib-switches.txt
+.DS_Store
+.idea/vcs.xml
+.idea/workspace.xml
+.idea/inspectionProfiles/Project_Default.xml
