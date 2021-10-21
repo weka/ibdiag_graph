@@ -30,6 +30,8 @@ def short_speed_info(speedinfo):
     return ibdiag.short_speed_info(speedinfo)
 
 def get_speed_edge_color(speedinfo):
+    if short_speed_info(speedinfo) == "200Gb":
+        return "purple"
     if short_speed_info(speedinfo) == "100Gb":
         return "black"
     if short_speed_info(speedinfo) == "56Gb":
@@ -274,13 +276,13 @@ def main():
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         sys.argv = [sys.argv[0], "cn", "weka",
-                    "--graph_subset_file", "uconn-subset",
-                    "--graph_all_file", "uconn-full", 
+                    "--graph_subset_file", "uconn-ib/uconn-subset",
+                    "--graph_all_file", "uconn-ib/uconn-full", 
                     "--graph_subset", 
                     f"cn378,cn394,cn383,cn382,cn370,cn386,cn391,cn365,cn379,cn384,cn387,cn385,cn337,"
                     f"cn395,cn406,cn368,cn407,cn332,cn341,cn348,cn380,cn364,cn338,cn403,"
                     f"weka01,weka02,weka03,weka04,weka05,weka06,weka07,weka08,weka09,weka10,weka11,weka12",
-                    "--xlsx_file", "uconn.xlsx",
+                    "--xlsx_file", "uconn-ib/uconn.xlsx",
                     "--switch_info_file", "uconn-ib/uconn-ib-switches.txt", 
                     "--route_info_file", "uconn-ib/uconn-ib-routes.txt",
                     "--link_info_file", "uconn-ib/uconn-ib-links.txt"

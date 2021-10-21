@@ -107,15 +107,20 @@ def switch_short_name(name):
     return tmp
 
 def short_speed_info(speedinfo):
-    if speedinfo.replace(" ", "").find("4X25") > -1:
+    speedinfo2 = speedinfo.replace(" ", "")
+    if speedinfo2.find("4X53") > -1:
+        return "200Gb"
+    if speedinfo2.find("4X25") > -1 or speedinfo2.find("2X53") > -1:
         return "100Gb"
-    if speedinfo.replace(" ", "").find("4X14") > -1:
+    if speedinfo2.find("4X14") > -1:
         return "56Gb"
-    if speedinfo.replace(" ", "").find("4X10") > -1:
+    if speedinfo2.find("4X10") > -1:
         return "40Gb"
-    if speedinfo.replace(" ", "").find("4X2.5") > -1:
+    if speedinfo2.find("1X25") > -1:
+        return "25Gb"
+    if speedinfo2.find("4X2.5") > -1:
         return "10Gb"
-    return speedinfo
+    return speedinfo2
     
 def get_line_quoted_substrings(line):
     # assumes substring is double quoted

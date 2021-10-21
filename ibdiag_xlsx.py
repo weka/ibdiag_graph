@@ -96,7 +96,7 @@ def main():
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         sys.argv = [sys.argv[0], "cn", "weka",
-                    "--xlsx_file", "uconn.xlsx",
+                    "--xlsx_file", "uconn-ib/uconn.xlsx",
                     "--switch_info_file", "uconn-ib/uconn-ib-switches.txt", 
                     "--route_info_file", "uconn-ib/uconn-ib-routes.txt",
                     "--link_info_file", "uconn-ib/uconn-ib-links.txt"
