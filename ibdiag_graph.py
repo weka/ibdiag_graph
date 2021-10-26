@@ -299,6 +299,6 @@ def use_peng_sample_data():
                     ]
 
 if __name__ == '__main__':
-    # use_uconn_sample_data()
-    use_peng_sample_data()
+    use_uconn_sample_data()
+    # use_peng_sample_data()
     main()
