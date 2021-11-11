@@ -243,9 +243,9 @@ def get_arg_parser(description="ibdiag_graph: Generate IB network map(s) and exc
     my_parser = ibdiag_xlsx.get_arg_parser(description=description)
     my_parser.add_argument("--graph_subset", dest="graph_subset", default=None,
                            help="comma separated list of names to be included in the graph")
-    my_parser.add_argument("--graph_subset_file", dest="graph_subset_file", default="graph.png", 
+    my_parser.add_argument("--graph_subset_file", dest="graph_subset_file", default="graph", 
         help="filename for graph subset output when --graph_subset is supplied")
-    my_parser.add_argument("--graph_all_file", dest="graph_all_file", default="graph-full.png", 
+    my_parser.add_argument("--graph_all_file", dest="graph_all_file", default="graph-full", 
         help="filename for full graph output; this file is always produced")
     return my_parser
 
@@ -257,11 +257,11 @@ def get_args():
 def main():
     args = get_args()
     time_a = time.time()
-    all_switches = ibdiag.do_diag_run(args)
+    all_switches, all_endpoints = ibdiag.do_diag_run(args)
     time_b = time.time()
     print(f"Diag run took {time_b - time_a} seconds.  Processed {len(all_switches)} switches.")
     print(all_switches)
-    ibdiag_xlsx.write_xlsx(all_switches, args.xlsx_file)
+    ibdiag_xlsx.write_xlsx(all_switches, all_endpoints, args.xlsx_file)
     print(f"Creating full graph...")
     do_switch_graph(all_switches, filename=args.graph_all_file, host_list=None)
     print(f"Full graph took {time.time() - time_b}")
@@ -276,29 +276,33 @@ def main():
 def use_uconn_sample_data():
     if len(sys.argv) == 1:
         sys.argv = [sys.argv[0], # "cn", "weka",
-                    "--graph_subset_file", "uconn-ib/uconn-subset",
-                    "--graph_all_file", "uconn-ib/uconn-full", 
+                    "--graph_subset_file", "testdata/uconn-ib/uconn-subset",
+                    "--graph_all_file", "testdata/uconn-ib/uconn-full", 
                     "--graph_subset", 
                     f"cn332,cn337,cn338,cn341,cn348,cn364,cn365,cn368,cn370,cn378,cn382,cn383,"
                     f"cn379,cn380,cn384,cn385,cn386,cn387,cn391,cn394,cn395,cn403,cn406,cn407,"
                     f"weka01,weka02,weka03,weka04,weka05,weka06,weka07,weka08,weka09,weka10,weka11,weka12",
-                    "--xlsx_file", "uconn-ib/uconn.xlsx",
-                    "--switch_info_file", "uconn-ib/uconn-ib-switches.txt", 
-                    "--route_info_file", "uconn-ib/uconn-ib-routes.txt",
-                    "--link_info_file", "uconn-ib/uconn-ib-links.txt"
+                    "--xlsx_file", "testdata/uconn-ib/uconn.xlsx",
+                    "--switch_info_file", "testdata/uconn-ib/uconn-ib-switches.txt", 
+                    "--route_info_file", "testdata/uconn-ib/uconn-ib-routes.txt",
+                    "--link_info_file", "testdata/uconn-ib/uconn-ib-links.txt"
                     ]
 
 def use_peng_sample_data():
     if len(sys.argv) == 1:
         sys.argv = [sys.argv[0], # "cn", "weka",
-                    "--graph_all_file", "peng/peng-full", 
-                    "--xlsx_file", "peng/peng.xlsx",
-                    "--switch_info_file", "peng/ibswitches-peng.txt", 
-                    "--route_info_file", "peng/ibroutes-peng.txt",
-                    "--link_info_file", "peng/iblinkinfo-peng.txt"
+                    "--graph_all_file", "testdata/peng/peng-full", 
+                    "--xlsx_file", "testdata/peng/peng.xlsx",
+                    "--switch_info_file", "testdata/peng/ibswitches-peng.txt", 
+                    "--route_info_file", "testdata/peng/ibroutes-peng.txt",
+                    "--link_info_file", "testdata/peng/iblinkinfo-peng.txt"
                     ]
 
+def use_no_files():
+    return
+
 if __name__ == '__main__':
-    use_uconn_sample_data()
+    use_no_files()
+    # use_uconn_sample_data()
     # use_peng_sample_data()
     main()

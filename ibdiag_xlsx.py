@@ -29,11 +29,11 @@ class IBWorkbook(xlsxwriter.Workbook):
         for name, tab in name_tab_tuples:
             self.sheets[name] = self.add_worksheet(name=tab, worksheet_class=IBWorksheet)
 
-def write_xlsx(switches, outfile):
+def open_xlsx(outfile):
     wb = IBWorkbook(outfile)
-     
     wb.add_worksheets([('switches', 'Switches'), ('sw_ports', 'All Up Ports'), ('isls', 'ISLs'), 
-        ('endpoints', 'Endpoints'), ('routes', 'Routes'), ('downports', 'Down Ports')])
+        ('endpoints', 'Endpoints'), ('routes', 'Routes'), ('downports', 'Down Ports'),
+        ('lidroutes', 'Routes by Lid')])
 
     wb.sheets['switches'].write_next_row(["Switch Name", "Switch LID", "# Ports", "# ISLs", "# Endpoints"], wb.bold)
     wb.sheets['switches'].set_column_widths([30, 8, 7, 7, 11])
@@ -47,7 +47,12 @@ def write_xlsx(switches, outfile):
     wb.sheets['downports'].set_column_widths([30, 8, 10, 2, 2])
     wb.sheets['routes'].write_next_row(["Switch Name", "Switch LID", "Switch Port", "# LID Routes", "LIDs Routed via this port"], wb.bold)
     wb.sheets['routes'].set_column_widths([30, 8, 10, 10, 100])
+    wb.sheets['lidroutes'].write_next_row(["Switch Name", "Switch LID", "Endpoint Name", "Endpoint LID", "Exits via port"], wb.bold)
+    wb.sheets['lidroutes'].set_column_widths([30, 8, 10, 10, 20])
+    return wb
 
+def write_xlsx(switches, endpoints, outfile):
+    wb = open_xlsx(outfile)
     for switchnum, (k, s) in enumerate(switches.items()):
         switchpp = f"{s.name} ({s.lid})"
         wb.sheets['switches'].write_next_row([switchpp, s.lid, int(s.portcount), len(s.isls), len(s.endpoints)])
@@ -68,6 +73,10 @@ def write_xlsx(switches, outfile):
                     speedinfo = s.endpoints[portnum].speed
                     speedinfo = ibdiag.short_speed_info(speedinfo)
                     wb.sheets['endpoints'].write_next_row([switchpp, s.lid, portnum, dest_name, dest_lid, speedinfo])
+                for r in s.routes_by_port[portnum]:
+                    if r in endpoints.keys():
+                        name = endpoints[r].name
+                        wb.sheets['lidroutes'].write_next_row([switchpp, s.lid, name, r, portnum])
             else:
                 wb.sheets['downports'].write_next_row([switchpp, s.lid, portnum])
     wb.close()
@@ -86,27 +95,27 @@ def get_args(allow_unknown_args=False):
 def main():
     time_a = time.time()
     args = get_args()
-    switches = ibdiag.do_diag_run(args)
-    write_xlsx(switches, args.xlsx_file)
+    switches, endpoints = ibdiag.do_diag_run(args)
+    write_xlsx(switches, endpoints, args.xlsx_file)
     time_c = time.time()
     print(f"run took: {time_c - time_a}")
 
 def use_uconn_sample_data():
     if len(sys.argv) == 1:
         sys.argv = [sys.argv[0], # "cn", "weka",
-                    "--xlsx_file", "uconn-ib/uconn.xlsx",
-                    "--switch_info_file", "uconn-ib/uconn-ib-switches.txt", 
-                    "--route_info_file", "uconn-ib/uconn-ib-routes.txt",
-                    "--link_info_file", "uconn-ib/uconn-ib-links.txt"
+                    "--xlsx_file", "testdata/uconn-ib/uconn.xlsx",
+                    "--switch_info_file", "testdata/uconn-ib/uconn-ib-switches.txt", 
+                    "--route_info_file", "testdata/uconn-ib/uconn-ib-routes.txt",
+                    "--link_info_file", "testdata/uconn-ib/uconn-ib-links.txt"
                     ]
 
 def use_peng_sample_data():
     if len(sys.argv) == 1:
         sys.argv = [sys.argv[0], # "cn", "weka",
-                    "--xlsx_file", "peng/peng.xlsx",
-                    "--switch_info_file", "peng/ibswitches-peng.txt", 
-                    "--route_info_file", "peng/ibroutes-peng.txt",
-                    "--link_info_file", "peng/iblinkinfo-peng.txt"
+                    "--xlsx_file", "testdata/peng/peng.xlsx",
+                    "--switch_info_file", "testdata/peng/ibswitches-peng.txt", 
+                    "--route_info_file", "testdata/peng/ibroutes-peng.txt",
+                    "--link_info_file", "testdata/peng/iblinkinfo-peng.txt"
                     ]
 
 if __name__ == '__main__':

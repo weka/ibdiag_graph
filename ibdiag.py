@@ -423,7 +423,7 @@ def do_diag_run(parsed_args):
     # print(f"\n    Finding and printing shared ISLs for routes...\n")
     # print_shared_subroutes(all_switches, all_subroutes, all_endports)
     print("Done.")
-    return all_switches
+    return all_switches, all_endports
 
 def main():
     time_a = time.time()
@@ -435,17 +435,17 @@ def main():
 def use_uconn_sample_data():
     if len(sys.argv) == 1:
         sys.argv = [sys.argv[0], # "cn", "weka",
-                    "--switch_info_file", "uconn-ib/uconn-ib-switches.txt", 
-                    "--route_info_file", "uconn-ib/uconn-ib-routes.txt",
-                    "--link_info_file", "uconn-ib/uconn-ib-links.txt"
+                    "--switch_info_file", "testdata/uconn-ib/uconn-ib-switches.txt", 
+                    "--route_info_file", "testdata/uconn-ib/uconn-ib-routes.txt",
+                    "--link_info_file", "testdata/uconn-ib/uconn-ib-links.txt"
                     ]
 
 def use_peng_sample_data():
     if len(sys.argv) == 1:
         sys.argv = [sys.argv[0], # "cn", "weka",
-                    "--switch_info_file", "peng/ibswitches-peng.txt", 
-                    "--route_info_file", "peng/ibroutes-peng.txt",
-                    "--link_info_file", "peng/iblinkinfo-peng.txt"
+                    "--switch_info_file", "testdata/peng/ibswitches-peng.txt", 
+                    "--route_info_file", "testdata/peng/ibroutes-peng.txt",
+                    "--link_info_file", "testdata/peng/iblinkinfo-peng.txt"
                     ]
 
 if __name__ == '__main__':
