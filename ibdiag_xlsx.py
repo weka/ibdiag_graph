@@ -47,8 +47,8 @@ def open_xlsx(outfile):
     wb.sheets['downports'].set_column_widths([30, 8, 10, 2, 2])
     wb.sheets['routes'].write_next_row(["Switch Name", "Switch LID", "Switch Port", "# LID Routes", "LIDs Routed via this port"], wb.bold)
     wb.sheets['routes'].set_column_widths([30, 8, 10, 10, 100])
-    wb.sheets['lidroutes'].write_next_row(["Switch Name", "Switch LID", "Endpoint Name", "Endpoint LID", "Exits via port"], wb.bold)
-    wb.sheets['lidroutes'].set_column_widths([30, 8, 10, 10, 20])
+    wb.sheets['lidroutes'].write_next_row(["Endpoint Name", "Endpoint LID", "Exits via port", "on Switch"], wb.bold)
+    wb.sheets['lidroutes'].set_column_widths([30, 20, 20, 20, 20])
     return wb
 
 def write_xlsx(switches, endpoints, outfile):
@@ -76,7 +76,7 @@ def write_xlsx(switches, endpoints, outfile):
                 for r in s.routes_by_port[portnum]:
                     if r in endpoints.keys():
                         name = endpoints[r].name
-                        wb.sheets['lidroutes'].write_next_row([switchpp, s.lid, name, r, portnum])
+                        wb.sheets['lidroutes'].write_next_row([name, r, portnum, switchpp])
             else:
                 wb.sheets['downports'].write_next_row([switchpp, s.lid, portnum])
     wb.close()

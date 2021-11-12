@@ -171,6 +171,7 @@ def do_switch_graph(switches, filename="graph", host_list=None):
     if host_list is not None:
         host_list = host_list.replace(" ", "")
         host_list = host_list.split(",")
+
     core_layer, sw_layer = 0, 2
     uppertotal = lowertotal = 0
     node_attrs = {'types': {}, 'colors': {}, 'labels': {}, 'names': {}, 'heights': {}, 'widths': {}, 'ports': {}}
