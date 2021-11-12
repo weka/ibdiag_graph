@@ -6,10 +6,10 @@ import ibdiag_xlsx
 import argparse
 import time
 import sys
-import bokeh.io
-import bokeh.plotting
-import bokeh.models
-import bokeh.palettes
+# import bokeh.io
+# import bokeh.plotting
+# import bokeh.models
+# import bokeh.palettes
 import random
 import os
 
@@ -111,42 +111,42 @@ def set_nx_edge_attributes(gnx, edge_attrs):
     nx.set_edge_attributes(gnx, edge_attrs['widths'], 'width')
     nx.set_edge_attributes(gnx, edge_attrs['types'], 'type')
 
-def do_bokeh_html_graph(gnx, pos, filename):
-    tooltips_nodes = [("name", "@names"), ("lid", "@index"), ("port", "@ports")]
-    plot = bokeh.plotting.figure(title="Infiniband Map",
-                                x_range=(-660, 660), y_range=(-1000, 1000),
-                                sizing_mode='scale_width', active_scroll='wheel_zoom',
-                                tools="pan,wheel_zoom,save,reset,tap,box_zoom")
-    plot.axis.visible = False
-    bg = bokeh.plotting.from_networkx(gnx, nx.multipartite_layout, scale=100, center=(0, 0),
-                                      subset_key="layer", align='horizontal')
-    bg_pos = bg.layout_provider.graph_layout
-    bg_source = bg.node_renderer.data_source
-    bg_data = bg_source.data
-    bg_data['x'] = [0]*len(pos)
-    bg_data['y'] = [0]*len(pos)
-    for k, v in bg_pos.items():
-        bg_data['x'][bg_data['index'].index(k)] = v[0] - 1
-        bg_data['y'][bg_data['index'].index(k)] = v[1] - 1
-    labels = bokeh.models.LabelSet(x='x', y='y', text='names', source=bg_source, render_mode='canvas')
-    plot.add_layout(labels)
-
-    bg.node_renderer.glyph = bokeh.models.Ellipse(name='names', fill_color='colors',
-                                                  height='heights', width='widths', line_width=1)
-    bg.edge_renderer.glyph = bokeh.models.MultiLine(line_color='color', line_alpha=0.8, line_width=1)
-    node_hover_tool = bokeh.models.HoverTool(renderers=[bg.node_renderer], tooltips=tooltips_nodes)
-    plot.add_tools(node_hover_tool)
- 
-    plot.renderers.append(bg)
-    point_drag = bokeh.models.PointDrawTool(renderers=[bg.node_renderer])
-    plot.add_tools(point_drag)
-    plot.toolbar.active_tap = None
-    plot.toolbar.active_drag = point_drag
-    bokeh.selection_policy = bokeh.models.NodesAndLinkedEdges()
-    bokeh.inspection_policy = bokeh.models.EdgesAndLinkedNodes()
-    bokeh.io.output_file(filename + ".html")
-    print("Plotting bokeh html")
-    bokeh.io.save(plot)
+# def do_bokeh_html_graph(gnx, pos, filename):
+#     tooltips_nodes = [("name", "@names"), ("lid", "@index"), ("port", "@ports")]
+#     plot = bokeh.plotting.figure(title="Infiniband Map",
+#                                x_range=(-660, 660), y_range=(-1000, 1000),
+#                                sizing_mode='scale_width', active_scroll='wheel_zoom',
+#                                tools="pan,wheel_zoom,save,reset,tap,box_zoom")
+#    plot.axis.visible = False
+#    bg = bokeh.plotting.from_networkx(gnx, nx.multipartite_layout, scale=100, center=(0, 0),
+#                                      subset_key="layer", align='horizontal')
+#    bg_pos = bg.layout_provider.graph_layout
+#    bg_source = bg.node_renderer.data_source
+#    bg_data = bg_source.data
+#    bg_data['x'] = [0]*len(pos)
+#    bg_data['y'] = [0]*len(pos)
+#    for k, v in bg_pos.items():
+#        bg_data['x'][bg_data['index'].index(k)] = v[0] - 1
+#        bg_data['y'][bg_data['index'].index(k)] = v[1] - 1
+#    labels = bokeh.models.LabelSet(x='x', y='y', text='names', source=bg_source, render_mode='canvas')
+#    plot.add_layout(labels)
+#
+#    bg.node_renderer.glyph = bokeh.models.Ellipse(name='names', fill_color='colors',
+#                                                  height='heights', width='widths', line_width=1)
+#    bg.edge_renderer.glyph = bokeh.models.MultiLine(line_color='color', line_alpha=0.8, line_width=1)
+#    node_hover_tool = bokeh.models.HoverTool(renderers=[bg.node_renderer], tooltips=tooltips_nodes)
+#    plot.add_tools(node_hover_tool)
+# 
+#    plot.renderers.append(bg)
+#    point_drag = bokeh.models.PointDrawTool(renderers=[bg.node_renderer])
+#    plot.add_tools(point_drag)
+#    plot.toolbar.active_tap = None
+#    plot.toolbar.active_drag = point_drag
+#    bokeh.selection_policy = bokeh.models.NodesAndLinkedEdges()
+#    bokeh.inspection_policy = bokeh.models.EdgesAndLinkedNodes()
+#    bokeh.io.output_file(filename + ".html")
+#    print("Plotting bokeh html")
+#    bokeh.io.save(plot)
 
 def update_switch_layer_info(sw_layer, core_layer, uppertotal, lowertotal, added_count):
     if sw_layer > core_layer:

@@ -184,3 +184,4 @@ testdata/uconn-ib/uconn-ib-switches.txt
 testdata/uconn-ib/uconn-subset.pdf
 testdata/uconn-ib/uconn.xlsx
 graph-full.pdf
+testdata/run-uconn.sh
