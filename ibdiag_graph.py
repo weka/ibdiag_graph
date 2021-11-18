@@ -279,13 +279,13 @@ def main():
 def use_uconn_sample_data():
     if len(sys.argv) == 1:
         sys.argv = [sys.argv[0], # "cn", "weka",
-                    "--graph_subset_file", "ibdiagtestdata/ucon/uconn-subset",
-                    "--graph_all_file", "ibdiagtestdata/ucon/uconn-full", 
+                    "--graph_subset_file", "ibdiagtestdata/ucon/ucon-subset",
+                    "--graph_all_file", "ibdiagtestdata/ucon/ucon-full", 
                     "--graph_subset", 
                     f"cn332,cn337,cn338,cn341,cn348,cn364,cn365,cn368,cn370,cn378,cn382,cn383,"
                     f"cn379,cn380,cn384,cn385,cn386,cn387,cn391,cn394,cn395,cn403,cn406,cn407,"
                     f"weka01,weka02,weka03,weka04,weka05,weka06,weka07,weka08,weka09,weka10,weka11,weka12",
-                    "--xlsx_file", "ibdiagtestdata/ucon/uconn.xlsx",
+                    "--xlsx_file", "ibdiagtestdata/ucon/ucon.xlsx",
                     "--switch_info_file", "ibdiagtestdata/ucon/ucon-switches.txt", 
                     "--route_info_file", "ibdiagtestdata/ucon/ucon-routes.txt",
                     "--link_info_file", "ibdiagtestdata/ucon/ucon-links.txt"
