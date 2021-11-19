@@ -432,24 +432,32 @@ def main():
     time_c = time.time()
     print(f"run took: {time_c - time_a}")
 
-def use_uconn_sample_data():
+def add_argv_arg(arg, string=None):
+    sys.argv.append(arg)
+    if string is not None:
+        sys.argv.append(string)
+
+def use_data_files(filedir, switch_info_file, route_info_file, link_info_file):
+    add_argv_arg("--switch_info_file", filedir + switch_info_file)
+    add_argv_arg("--route_info_file", filedir + route_info_file)
+    add_argv_arg("--link_info_file", filedir + link_info_file)
+
+def use_ucon_sample_data():
     if len(sys.argv) == 1:
-        sys.argv = [sys.argv[0], # "cn", "weka",
-                    "--switch_info_file", "testdata/uconn-ib/uconn-ib-switches.txt", 
-                    "--route_info_file", "testdata/uconn-ib/uconn-ib-routes.txt",
-                    "--link_info_file", "testdata/uconn-ib/uconn-ib-links.txt"
-                    ]
+        use_data_files("ibdiagtestdata/ucon/", 
+                       "ucon-switches.txt", 
+                       "ucon-routes.txt", 
+                       "ucon-links.txt")
 
 def use_peng_sample_data():
     if len(sys.argv) == 1:
-        sys.argv = [sys.argv[0], # "cn", "weka",
-                    "--switch_info_file", "testdata/peng/ibswitches-peng.txt", 
-                    "--route_info_file", "testdata/peng/ibroutes-peng.txt",
-                    "--link_info_file", "testdata/peng/iblinkinfo-peng.txt"
-                    ]
-
+        use_data_files("ibdiagtestdata/peng/", 
+                       "ibswitches-peng.txt", 
+                       "ibroutes-peng.txt", 
+                       "iblinkinfo-peng.txt")
+ 
 if __name__ == '__main__':
-    use_uconn_sample_data()
+    use_ucon_sample_data()
     # use_peng_sample_data()
     main()
 

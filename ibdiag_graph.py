@@ -234,10 +234,11 @@ def do_switch_graph(switches, filename="graph", host_list=None):
     # do_bokeh_html_graph(gnx, pos, filename)
 
     custom_legend_lines = [
+        matplotlib.lines.Line2D([0], [0], color="purple", lw=4),
         matplotlib.lines.Line2D([0], [0], color="black", lw=4), matplotlib.lines.Line2D([0], [0], color="blue", lw=4),
         matplotlib.lines.Line2D([0], [0], color="orange", lw=4), matplotlib.lines.Line2D([0], [0], color="red", lw=4)
         ]
-    plt.legend(custom_legend_lines, ['100Gb', '56Gb', '40Gb', '10Gb or other'], loc='lower left', fontsize=20)
+    plt.legend(custom_legend_lines, ['200Gb', '100Gb', '56Gb', '40Gb', '10Gb or other'], loc='lower left', fontsize=20)
     plt.title('Infiniband network', fontsize=30)
     plt.savefig(filename + ".pdf", bbox_inches='tight', pad_inches=0.5)
     plt.show()
@@ -278,34 +279,21 @@ def main():
 
 def use_uconn_sample_data():
     if len(sys.argv) == 1:
-        sys.argv = [sys.argv[0], # "cn", "weka",
-                    "--graph_subset_file", "ibdiagtestdata/ucon/ucon-subset",
-                    "--graph_all_file", "ibdiagtestdata/ucon/ucon-full", 
-                    "--graph_subset", 
-                    f"cn332,cn337,cn338,cn341,cn348,cn364,cn365,cn368,cn370,cn378,cn382,cn383,"
-                    f"cn379,cn380,cn384,cn385,cn386,cn387,cn391,cn394,cn395,cn403,cn406,cn407,"
-                    f"weka01,weka02,weka03,weka04,weka05,weka06,weka07,weka08,weka09,weka10,weka11,weka12",
-                    "--xlsx_file", "ibdiagtestdata/ucon/ucon.xlsx",
-                    "--switch_info_file", "ibdiagtestdata/ucon/ucon-switches.txt", 
-                    "--route_info_file", "ibdiagtestdata/ucon/ucon-routes.txt",
-                    "--link_info_file", "ibdiagtestdata/ucon/ucon-links.txt"
-                    ]
-
+        ibdiag_xlsx.use_ucon_sample_data()
+        outdir = "ibdiagtestdata/ucon/"
+        weka_clients = f"cn332,cn337,cn338,cn341,cn348,cn364,cn365,cn368,cn370,cn378,cn382,cn383," + \
+                       f"cn379,cn380,cn384,cn385,cn386,cn387,cn391,cn394,cn395,cn403,cn406,cn407,"
+        weka_backends = ",".join(["weka" + f'{i:02}' for i in range(1, 13)])    # weka01..weka12
+        ibdiag.add_argv_arg("--graph_all_file", outdir + "ucon-full") 
+        ibdiag.add_argv_arg("--graph_subset_file", outdir + "ucon-subset")
+        ibdiag.add_argv_arg("--graph_subset", weka_clients + weka_backends)
+    
 def use_peng_sample_data():
     if len(sys.argv) == 1:
-        sys.argv = [sys.argv[0], # "cn", "weka",
-                    "--graph_all_file", "ibdiagtestdata/peng/peng-full", 
-                    "--xlsx_file", "ibdiagtestdata/peng/peng.xlsx",
-                    "--switch_info_file", "ibdiagtestdata/peng/ibswitches-peng.txt", 
-                    "--route_info_file", "ibdiagtestdata/peng/ibroutes-peng.txt",
-                    "--link_info_file", "ibdiagtestdata/peng/iblinkinfo-peng.txt"
-                    ]
-
-def use_no_files():
-    return
+        ibdiag_xlsx.use_peng_sample_data()
+        ibdiag.add_argv_arg("--graph_all_file", "ibdiagtestdata/peng/peng-full")
 
 if __name__ == '__main__':
-    # use_no_files()
     # use_uconn_sample_data()
-    use_peng_sample_data()
+    # use_peng_sample_data()
     main()
