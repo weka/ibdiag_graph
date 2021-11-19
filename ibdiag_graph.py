@@ -293,6 +293,6 @@ def use_peng_sample_data():
         ibdiag.add_argv_arg("--graph_all_file", datadir + "peng-full")
 
 if __name__ == '__main__':
-    use_uconn_sample_data()
+    # use_uconn_sample_data()
     # use_peng_sample_data()
     main()
