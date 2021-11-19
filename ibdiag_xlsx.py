@@ -102,13 +102,15 @@ def main():
 
 def use_ucon_sample_data():
     if len(sys.argv) == 1:
-        ibdiag.use_ucon_sample_data()
-        ibdiag.add_argv_arg("--xlsx_file", "ibdiagtestdata/ucon/ucon.xlsx")
+        datadir = ibdiag.use_ucon_sample_data()
+        ibdiag.add_argv_arg("--xlsx_file", datadir + "ucon.xlsx")
+        return datadir
 
 def use_peng_sample_data():
     if len(sys.argv) == 1:
-        ibdiag.use_peng_sample_data()
-        ibdiag.add_argv_arg("--xlsx_file", "ibdiagtestdata/peng/peng.xlsx")
+        datadir = ibdiag.use_peng_sample_data()
+        ibdiag.add_argv_arg("--xlsx_file", datadir + "peng.xlsx")
+        return datadir
 
 if __name__ == '__main__':
     use_ucon_sample_data()

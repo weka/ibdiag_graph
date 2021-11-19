@@ -279,21 +279,20 @@ def main():
 
 def use_uconn_sample_data():
     if len(sys.argv) == 1:
-        ibdiag_xlsx.use_ucon_sample_data()
-        outdir = "ibdiagtestdata/ucon/"
-        weka_clients = f"cn332,cn337,cn338,cn341,cn348,cn364,cn365,cn368,cn370,cn378,cn382,cn383," + \
-                       f"cn379,cn380,cn384,cn385,cn386,cn387,cn391,cn394,cn395,cn403,cn406,cn407,"
-        weka_backends = ",".join(["weka" + f'{i:02}' for i in range(1, 13)])    # weka01..weka12
-        ibdiag.add_argv_arg("--graph_all_file", outdir + "ucon-full") 
-        ibdiag.add_argv_arg("--graph_subset_file", outdir + "ucon-subset")
-        ibdiag.add_argv_arg("--graph_subset", weka_clients + weka_backends)
+        datadir = ibdiag_xlsx.use_ucon_sample_data()
+        clients = f"cn332,cn337,cn338,cn341,cn348,cn364,cn365,cn368,cn370,cn378,cn379,cn380," + \
+                  f"cn382,cn383,cn384,cn385,cn386,cn387,cn391,cn394,cn395,cn403,cn406,cn407,"
+        weka_backends = ",".join([f"weka{i:02}" for i in range(1, 13)])    # weka01..weka12
+        ibdiag.add_argv_arg("--graph_all_file", datadir + "ucon-full") 
+        ibdiag.add_argv_arg("--graph_subset_file", datadir + "ucon-subset")
+        ibdiag.add_argv_arg("--graph_subset", clients + weka_backends)
     
 def use_peng_sample_data():
     if len(sys.argv) == 1:
-        ibdiag_xlsx.use_peng_sample_data()
-        ibdiag.add_argv_arg("--graph_all_file", "ibdiagtestdata/peng/peng-full")
+        datadir = ibdiag_xlsx.use_peng_sample_data()
+        ibdiag.add_argv_arg("--graph_all_file", datadir + "peng-full")
 
 if __name__ == '__main__':
-    # use_uconn_sample_data()
+    use_uconn_sample_data()
     # use_peng_sample_data()
     main()

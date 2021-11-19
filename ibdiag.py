@@ -443,18 +443,16 @@ def use_data_files(filedir, switch_info_file, route_info_file, link_info_file):
     add_argv_arg("--link_info_file", filedir + link_info_file)
 
 def use_ucon_sample_data():
+    datadir = "ibdiagtestdata/ucon/"
     if len(sys.argv) == 1:
-        use_data_files("ibdiagtestdata/ucon/", 
-                       "ucon-switches.txt", 
-                       "ucon-routes.txt", 
-                       "ucon-links.txt")
+        use_data_files(datadir, "ucon-switches.txt", "ucon-routes.txt", "ucon-links.txt")
+    return datadir
 
 def use_peng_sample_data():
+    datadir = "ibdiagtestdata/peng/"
     if len(sys.argv) == 1:
-        use_data_files("ibdiagtestdata/peng/", 
-                       "ibswitches-peng.txt", 
-                       "ibroutes-peng.txt", 
-                       "iblinkinfo-peng.txt")
+        use_data_files(datadir, "ibswitches-peng.txt", "ibroutes-peng.txt", "iblinkinfo-peng.txt")
+    return datadir
  
 if __name__ == '__main__':
     use_ucon_sample_data()
