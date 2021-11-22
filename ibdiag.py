@@ -14,6 +14,8 @@ def get_arg_parser(description="ibdiag: Generate IB connection data"):
         help="file containing the results of the 'iblinkinfo --switches-only -l' command")
     argparser.add_argument("--route_info_file", dest="route_info_file", default = None, 
         help="file containing the concatenated results of the 'ibroute <switch lid>' command, for all switches'")
+    argparser.add_argument("--skip_routing", dest="skip_routing", action='store_true',
+        help="Skip gathering/calculating routing information")
     return argparser
 
 def get_args():
@@ -192,10 +194,9 @@ def load_linkinfo_data(switches, link_info_file=None):
 def parse_route_line(line):
     # route file line format:
     # lid(hex) out-port ': (' <'Switch' | 'Channel Adapter' > 'portguid' guid(hex): <quoted name>')'
-    hex_lid, rest = line.split(" ", 1)
-    lid = int(hex_lid, 16)
-    route_port, _ = rest.split(" ", 1)
-    return [lid, int(route_port)]
+    vals = line.split(" ", 2)
+    lid = int(vals[0], 16)
+    return [lid, int(vals[1])]
 
 def compute_route_info(switches, route_info_file=None):
     if route_info_file is not None and os.path.isfile(route_info_file):
@@ -204,7 +205,7 @@ def compute_route_info(switches, route_info_file=None):
     else:
         lines = []
         for slid in switches.keys():
-            cmd = ['ibroute', f"{slid}"]
+            cmd = ['ibroute', "-t", "15", "-n", f"{slid}"]
             output = run_cmd(cmd)
             lines += output.splitlines()
     lid = -1
@@ -213,6 +214,7 @@ def compute_route_info(switches, route_info_file=None):
             if line.startswith("Unicast"):
                 tmp = re.search('switch Lid ([0-9]*)', line).group(1)
                 lid = int(tmp)
+                print(f"Getting routes for switch {lid}")
             continue
         route = parse_route_line(line)
         switches[lid].routes[route[0]] = route[1]
@@ -354,8 +356,9 @@ def print_switch_information(all_switches):
         for p, (sw, swp, speed) in val.isls.items():
             print(f"            from port {p:3} to: port {swp:3} on switch {sw.name}"
                   f" (lid {sw.lid:3} {sw.guid}) speed {speed}")
-            rs = [r for r in val.routes_by_port[p] if r not in all_switches.keys()]
-            print(f"                routes to endport lids: {rs}")
+            if p in val.routes_by_port.keys():
+                rs = [r for r in val.routes_by_port[p] if r not in all_switches.keys()]
+                print(f"                routes to endport lids: {rs}")
         print(f"        Endpoints for switch {val}:")
         for p, val2 in val.connections.items():
             if val2.lid not in all_switches:
@@ -397,7 +400,8 @@ def print_endports(all_endports):
 def do_diag_run(parsed_args):
     all_switches = get_switches(parsed_args.switch_info_file)
     print_switches(all_switches)
-    compute_route_info(all_switches, parsed_args.route_info_file)
+    if not parsed_args.skip_routing:
+        compute_route_info(all_switches, parsed_args.route_info_file)
     print(f"\n    Finding switch connections...\n")
     all_endports = load_linkinfo_data(all_switches, parsed_args.link_info_file)
     print_endports(all_endports)
@@ -455,7 +459,7 @@ def use_peng_sample_data():
     return datadir
  
 if __name__ == '__main__':
-    use_ucon_sample_data()
+    # use_ucon_sample_data()
     # use_peng_sample_data()
     main()
 

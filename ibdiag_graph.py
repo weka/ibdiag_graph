@@ -215,9 +215,9 @@ def do_switch_graph(switches, filename="graph", host_list=None):
     set_nx_edge_attributes(gnx, edge_attrs)
 
     print(f"isl_edges len: {len(isl_edges)}, end_edges len: {len(end_edges)}")
-    for (s, e, k) in isl_edges:
-        if k == 0:
-            print(f"Between switches: {s} and {e} there are {count_edges_for(isl_edges, s, e)} ISL(s)")
+    #for (s, e, k) in isl_edges:
+    #    if k == 0:
+    #        print(f"Between switches: {s} and {e} there are {count_edges_for(isl_edges, s, e)} ISL(s)")
 
     pos = nx.multipartite_layout(gnx, subset_key="layer", align='vertical', scale=1)
     figsize = max(50, uppertotal / 2.5, lowertotal / 2.5, len(switches))
@@ -226,10 +226,11 @@ def do_switch_graph(switches, filename="graph", host_list=None):
 
     colors = [c for (i, c) in gnx.nodes(data='colors')]
     widths = [w*400 for (i, w) in gnx.nodes(data='widths')]
+    time_a = time.time()
     nx.draw_networkx_nodes(gnx, pos, list(gnx.nodes()), node_size=widths, node_color=colors)
     nx.draw_networkx_labels(gnx, pos, labels=node_attrs['labels'])
     graph_draw_nx_edges(gnx, pos, widths)
-
+    print(f"Calculating/adding edges and nodes took {time.time() - time_a} seconds.")
     # not useful for now - sizing, spread, and multiple edges not handled well yet
     # do_bokeh_html_graph(gnx, pos, filename)
 
@@ -240,7 +241,9 @@ def do_switch_graph(switches, filename="graph", host_list=None):
         ]
     plt.legend(custom_legend_lines, ['200Gb', '100Gb', '56Gb', '40Gb', '10Gb or other'], loc='lower left', fontsize=20)
     plt.title('Infiniband network', fontsize=30)
+    time_a = time.time()
     plt.savefig(filename + ".pdf", bbox_inches='tight', pad_inches=0.5)
+    print(f"plt.savefig took {time.time() - time_a} seconds.")
     plt.show()
 
 def get_arg_parser(description="ibdiag_graph: Generate IB network map(s) and excel data file"):
@@ -251,6 +254,8 @@ def get_arg_parser(description="ibdiag_graph: Generate IB network map(s) and exc
         help="filename for graph subset output when --graph_subset is supplied")
     my_parser.add_argument("--graph_all_file", dest="graph_all_file", default="graph-full", 
         help="filename for full graph output; this file is always produced")
+    my_parser.add_argument("--xlsx_only", dest="xlsx_only", action='store_true',
+        help="if provided no graph(s) are generated, just a spreadsheet file")
     return my_parser
 
 def get_args():
@@ -262,19 +267,20 @@ def main():
     args = get_args()
     time_a = time.time()
     all_switches, all_endpoints = ibdiag.do_diag_run(args)
-    time_b = time.time()
-    print(f"Diag run took {time_b - time_a} seconds.  Processed {len(all_switches)} switches.")
+    print(f"Diag run took {time.time() - time_a} seconds.  Processed {len(all_switches)} switches.")
     print(all_switches)
     ibdiag_xlsx.write_xlsx(all_switches, all_endpoints, args.xlsx_file)
-    print(f"Creating full graph...")
-    do_switch_graph(all_switches, filename=args.graph_all_file, host_list=None)
-    print(f"Full graph took {time.time() - time_b}")
-    if args.graph_subset is not None:
+    if not args.xlsx_only:
+        print(f"Creating full graph...")
         time_b = time.time()
-        print(f"Creating graph with graph_subset list: {args.graph_subset}")
-        do_switch_graph(all_switches, filename=args.graph_subset_file, host_list=args.graph_subset)
-    time_c = time.time()
-    print(f"Graph creation time: {time_c - time_b} seconds.")
+        do_switch_graph(all_switches, filename=args.graph_all_file, host_list=None)
+        print(f"Full graph took {time.time() - time_b}")
+        if args.graph_subset is not None:
+            time_b = time.time()
+            print(f"Creating graph with graph_subset list: {args.graph_subset}")
+            do_switch_graph(all_switches, filename=args.graph_subset_file, host_list=args.graph_subset)
+            print(f"SubGraph creation time: {time.time() - time_b} seconds.")
+    print(f"Full run took {time.time() - time_a} seconds.")
     # print(f"Graph created and saved in {args.graph_file}.")
 
 def use_uconn_sample_data():
@@ -286,6 +292,7 @@ def use_uconn_sample_data():
         ibdiag.add_argv_arg("--graph_all_file", datadir + "ucon-full") 
         ibdiag.add_argv_arg("--graph_subset_file", datadir + "ucon-subset")
         ibdiag.add_argv_arg("--graph_subset", clients + weka_backends)
+        ibdiag.add_argv_arg("--skip_routing")
     
 def use_peng_sample_data():
     if len(sys.argv) == 1:

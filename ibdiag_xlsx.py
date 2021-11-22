@@ -67,16 +67,18 @@ def write_xlsx(switches, endpoints, outfile):
                     _, port, speedinfo = s.isls[portnum]
                     speedinfo = ibdiag.short_speed_info(speedinfo)
                     wb.sheets['isls'].write_next_row([switchpp, s.lid, portnum, dest_name, dest_lid, port, speedinfo])
-                    wb.sheets['routes'].write_next_row([switchpp, s.lid, portnum, len(s.routes_by_port[portnum]), 
-                        ' '.join(str(r) for r in s.routes_by_port[portnum])])
+                    if portnum in s.routes_by_port.keys():
+                        wb.sheets['routes'].write_next_row([switchpp, s.lid, portnum, len(s.routes_by_port[portnum]), 
+                            ' '.join(str(r) for r in s.routes_by_port[portnum])])
                 else:
                     speedinfo = s.endpoints[portnum].speed
                     speedinfo = ibdiag.short_speed_info(speedinfo)
                     wb.sheets['endpoints'].write_next_row([switchpp, s.lid, portnum, dest_name, dest_lid, speedinfo])
-                for r in s.routes_by_port[portnum]:
-                    if r in endpoints.keys():
-                        name = endpoints[r].name
-                        wb.sheets['lidroutes'].write_next_row([name, r, portnum, switchpp])
+                if portnum in s.routes_by_port.keys():
+                    for r in s.routes_by_port[portnum]:
+                        if r in endpoints.keys():
+                            name = endpoints[r].name
+                            wb.sheets['lidroutes'].write_next_row([name, r, portnum, switchpp])
             else:
                 wb.sheets['downports'].write_next_row([switchpp, s.lid, portnum])
     wb.close()
@@ -113,6 +115,6 @@ def use_peng_sample_data():
         return datadir
 
 if __name__ == '__main__':
-    use_ucon_sample_data()
+    # use_ucon_sample_data()
     # use_peng_sample_data()
     main()
