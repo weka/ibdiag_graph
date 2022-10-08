@@ -97,8 +97,10 @@ def graph_add_edge_attrs(edge_attrs, edge, type, color, width, label=None):
         edge_attrs['labels'][edge] = label
 
 def graph_add_switch(sw, lid, gnx, core_layer, sw_layer, isl_edges, node_attrs, edge_attrs, sw_label = None):
+    core_sw = 0
     if len(sw.endpoints) == 0:
         # outer_list[0].append(lid)
+        core_sw = 1
         gnx.add_node(lid, layer=core_layer, size=20)
         graph_add_core_node_attrs(node_attrs, lid, 'core switch', 'lightgreen', 25, 10, label=sw_label)
     else:
@@ -114,6 +116,7 @@ def graph_add_switch(sw, lid, gnx, core_layer, sw_layer, isl_edges, node_attrs, 
             isl_label += f" (x{edge[2] + 1})"
         gnx.add_edge(lid, dest_sw.lid, label=isl_label)
         graph_add_edge_attrs(edge_attrs, edge, 'isl', get_speed_edge_color(speed), 1)
+    return core_sw
 
 def graph_draw_nx_edges(gnx, pos, widths):
     drawn = []
@@ -159,13 +162,24 @@ def update_switch_layer_info(sw_layer, core_layer, uppertotal, lowertotal, added
         sw_layer = -sw_layer
     return sw_layer, core_layer, uppertotal, lowertotal
 
-def adjust_positions(pos, figsize):
+def adjust_positions(pos, switches, figsize):
+    print(f"len pos: {len(pos)}, switches: {len(switches)}, figsize={figsize}")
+    ep_adjustx = .2/13   # shift within layer/number layers
+    sw_adjustx, sw_adjusty = 0, 0
+    if len(switches) > 2:
+        sw_adjustx = ep_adjustx * 3.0
+        num_ep_rows = (len(pos) - len(switches))/6.0
+        sw_adjusty = max(1, num_ep_rows/len(switches))
     for i, (k, v) in enumerate(pos.items()):
         # print(k, v)
-        if i % 2 == 0:
-            v[0] = v[0] - 1/figsize/2
+        shift = (i % 2) - 0.5
+        if k in switches:
+            v[1] = v[1] * sw_adjusty
+            if len(switches[k].endpoints.items()) > 0:
+                v[0] = v[0] - (sw_adjustx * shift)
+            # print(f"Switch: {k} coord: {v}")
         else:
-            v[0] = v[0] + 1/figsize/2
+            v[0] = v[0] - (ep_adjustx * shift)
 
 def do_switch_graph(switches, filename="graph", host_list=None):
     labeldict = {}
@@ -175,6 +189,7 @@ def do_switch_graph(switches, filename="graph", host_list=None):
         host_list = host_list.split(",")
 
     core_layer, sw_layer = 0, 2
+    core_count = 0
     uppertotal = lowertotal = 0
     node_attrs = {'types': {}, 'colors': {}, 'labels': {}, 'names': {}, 'heights': {}, 'widths': {}, 'ports': {}}
     edge_attrs = {'labels': {}, 'types': {}, 'colors': {}, 'widths': {}}
@@ -184,7 +199,7 @@ def do_switch_graph(switches, filename="graph", host_list=None):
         sw_display_name = sw.name.replace(" - ", "- ")
         sw_display_name = sw_display_name.replace(" ", "\n")
         sw_label = f"{sw_display_name}\n{len(sw.connections)}/{sw.portcount} ports up\n(lid {lid})"
-        graph_add_switch(sw, lid, gnx, core_layer, sw_layer, isl_edges, node_attrs, edge_attrs, sw_label=sw_label)
+        core_count += graph_add_switch(sw, lid, gnx, core_layer, sw_layer, isl_edges, node_attrs, edge_attrs, sw_label=sw_label)
         endpoints_added = 0
         for port, ep in sw.endpoints.items():
             if host_list is None or ibdiag.get_portstripped_hostname(ep.name) in host_list:
@@ -192,9 +207,11 @@ def do_switch_graph(switches, filename="graph", host_list=None):
                 end_nodes.append(ep.lid)
                 endpoints_added += 1
                 if sw_layer < core_layer:
-                    ep_layer = sw_layer - random.randrange(3, 6)
+                    #ep_layer = sw_layer - random.randrange(3, 6)
+                    ep_layer = sw_layer - ((ep.lid % 3) + 3)
                 else:
-                    ep_layer = sw_layer + random.randrange(3, 6)
+                    #ep_layer = sw_layer + random.randrange(3, 6)
+                    ep_layer = sw_layer + ((ep.lid % 3) + 3)
                 gnx.add_node(ep.lid, layer=ep_layer)
                 if ep.name.find("weka") > -1:
                     node_color = "lavender"
@@ -222,7 +239,7 @@ def do_switch_graph(switches, filename="graph", host_list=None):
     pos = nx.multipartite_layout(gnx, subset_key="layer", align='vertical', scale=1)
     figsize = max(50, uppertotal / 2.5, lowertotal / 2.5, len(switches))
     plt.figure(figsize=(figsize, figsize*1.3))
-    adjust_positions(pos, figsize)
+    adjust_positions(pos, switches, figsize)
 
     colors = [c for (i, c) in gnx.nodes(data='colors')]
     widths = [w*400 for (i, w) in gnx.nodes(data='widths')]
