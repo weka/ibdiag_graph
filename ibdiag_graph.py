@@ -8,6 +8,7 @@ import time
 import sys
 import random
 import os
+import re
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -79,6 +80,24 @@ def get_speed_edge_color(speedinfo):
 #    bokeh.io.output_file(filename + ".html")
 #    print("Plotting bokeh html")
 #    bokeh.io.save(plot)
+
+def expand_hostlist(args, endpoints):
+    hosts = args.graph_subset
+
+    hosts_l = hosts.split(",")
+    if len(hosts_l) > 1:
+        hosts_l = "^(" + "|".join(hosts_l) + ")$"
+    else:
+        hosts_l = hosts_l[0]
+    regex = re.compile(hosts_l)
+    hostnames, _ = ibdiag.get_hostinfo_tables(endpoints)
+    result_list = []
+    for h in hostnames:
+        if regex.match(h):
+            result_list.append(h)
+    print(result_list)
+    result_list = ",".join(result_list)
+    return result_list
 
 def graph_add_core_node_attrs(node_attrs, lid, type, color, width, height=None, label=None):
     node_attrs['types'][lid] = type
@@ -266,7 +285,7 @@ def do_switch_graph(switches, filename="graph", host_list=None):
 def get_arg_parser(description="ibdiag_graph: Generate IB network map(s) and excel data file"):
     my_parser = ibdiag_xlsx.get_arg_parser(description=description)
     my_parser.add_argument("--graph_subset", dest="graph_subset", default=None,
-                           help="comma separated list of names to be included in the graph")
+                           help="comma separated list, or a regex, of names to be included in the graph")
     my_parser.add_argument("--graph_subset_file", dest="graph_subset_file", default="graph", 
         help="filename for graph subset output when --graph_subset is supplied")
     my_parser.add_argument("--graph_all_file", dest="graph_all_file", default="graph-full", 
@@ -294,8 +313,11 @@ def main():
         print(f"Full graph took {time.time() - time_b}")
         if args.graph_subset is not None:
             time_b = time.time()
+            print(all_endpoints)
+            host_subset = expand_hostlist(args, all_endpoints)
             print(f"Creating graph with graph_subset list: {args.graph_subset}")
-            do_switch_graph(all_switches, filename=args.graph_subset_file, host_list=args.graph_subset)
+            print(f"hostlist expanded: {host_subset}")
+            do_switch_graph(all_switches, filename=args.graph_subset_file, host_list=host_subset)
             print(f"SubGraph creation time: {time.time() - time_b} seconds.")
     print(f"Full run took {time.time() - time_a} seconds.")
     # print(f"Graph created and saved in {args.graph_file}.")
