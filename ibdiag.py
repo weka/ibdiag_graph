@@ -124,11 +124,11 @@ def get_line_quoted_substrings(line):
     return re.findall('\"(.*?)\"', line)
 
 def get_hex_val(line):
-    hexpattern = '(0x[0-9,a-f,A-f]*)'
+    hexpattern = '(0x[0-9,a-f,A-F]*)'
     return re.search(hexpattern, line)
 
 def get_hex_vals(line):
-    hexpattern = '(0x[0-9,a-f,A-f]*)'
+    hexpattern = '(0x[0-9,a-f,A-F]*)'
     return re.findall(hexpattern, line)
 
 def cleanup_linkinfo_string(string):
